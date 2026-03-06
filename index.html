@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Surf Style Test</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+
+margin:0;
+font-family:'Pretendard',sans-serif;
+height:100vh;
+
+background:linear-gradient(135deg,#5ec6ff,#7be0c6);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+}
+
+.container{
+
+width:420px;
+max-width:90%;
+
+background:rgba(255,255,255,0.9);
+
+backdrop-filter:blur(12px);
+
+border-radius:22px;
+
+padding:35px;
+
+box-shadow:0 20px 40px rgba(0,0,0,0.15);
+
+text-align:center;
+
+}
+
+.title{
+
+font-size:28px;
+font-weight:600;
+margin-bottom:10px;
+
+}
+
+.subtitle{
+
+opacity:0.7;
+margin-bottom:30px;
+
+}
+
+button{
+
+border:none;
+padding:14px 18px;
+
+border-radius:14px;
+
+font-size:16px;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+.start{
+
+background:#4eaaff;
+color:white;
+
+}
+
+.start:hover{
+
+transform:scale(1.05);
+
+}
+
+.answer{
+
+background:white;
+
+border:1px solid #e6ecf5;
+
+margin:12px 0;
+
+padding:15px;
+
+border-radius:14px;
+
+cursor:pointer;
+
+transition:0.25s;
+
+}
+
+.answer:hover{
+
+transform:translateY(-4px);
+
+box-shadow:0 10px 20px rgba(0,0,0,0.12);
+
+}
+
+.progress{
+
+height:8px;
+background:#e6ecf5;
+
+border-radius:10px;
+
+margin-bottom:20px;
+
+}
+
+.bar{
+
+height:8px;
+width:10%;
+
+background:linear-gradient(90deg,#4facfe,#00f2fe);
+
+border-radius:10px;
+
+transition:0.3s;
+
+}
+
+.resultimg{
+
+width:200px;
+margin:20px auto;
+
+}
+
+.apply{
+
+background:#00c2a8;
+color:white;
+margin-top:20px;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container" id="app">
+
+<div class="title">🌊 Surf Style Test</div>
+<div class="subtitle">나의 서핑 스타일 찾기</div>
+
+<button class="start" onclick="start()">테스트 시작</button>
+
+<br><br>
+
+<button onclick="setLang('ko')">한국어</button>
+<button onclick="setLang('en')">English</button>
+
+</div>
+
+<script>
+
+let lang="ko"
+
+const applyLink="https://docs.google.com/forms/d/e/1FAIpQLSdUfT1mArajdegkuPpvFVDfW-E7uEoijNLzhviAQCk5fOchiw/viewform"
+
+function setLang(l){
+
+lang=l
+
+}
+
+const questions=[
+
+{
+q:{
+ko:"바다에 가는 이유는?",
+en:"Why do you go to the beach?"
+},
+
+a:[
+{t:{ko:"🏄 운동",en:"🏄 Sport"},type:"wave"},
+{t:{ko:"🌊 모험",en:"🌊 Adventure"},type:"storm"},
+{t:{ko:"👥 친구",en:"👥 Friends"},type:"social"},
+{t:{ko:"🌅 힐링",en:"🌅 Healing"},type:"chill"}
+]
+
+},
+
+{
+q:{
+ko:"서핑 분위기는?",
+en:"Your surf vibe?"
+},
+
+a:[
+{t:{ko:"차분한 파도",en:"Calm wave"},type:"chill"},
+{t:{ko:"파워풀한 파도",en:"Power wave"},type:"storm"},
+{t:{ko:"친구들과",en:"With friends"},type:"social"},
+{t:{ko:"스킬 연습",en:"Practice"},type:"wave"}
+]
+
+},
+
+{
+q:{
+ko:"여행 스타일은?",
+en:"Travel style?"
+},
+
+a:[
+{t:{ko:"액티비티",en:"Active"},type:"wave"},
+{t:{ko:"탐험",en:"Explore"},type:"storm"},
+{t:{ko:"사람들과",en:"People"},type:"social"},
+{t:{ko:"힐링",en:"Relax"},type:"chill"}
+]
+
+}
+
+]
+
+let score={
+wave:0,
+storm:0,
+social:0,
+chill:0
+}
+
+let q=0
+
+function start(){
+
+showQ()
+
+}
+
+function showQ(){
+
+let total=questions.length
+
+let html=`
+
+<div class="progress">
+<div class="bar" style="width:${(q+1)/total*100}%"></div>
+</div>
+
+<h2>${questions[q].q[lang]}</h2>
+`
+
+questions[q].a.forEach(a=>{
+
+html+=`<div class="answer" onclick="choose('${a.type}')">${a.t[lang]}</div>`
+
+})
+
+document.getElementById("app").innerHTML=html
+
+}
+
+function choose(t){
+
+score[t]++
+
+q++
+
+if(q>=questions.length){
+
+result()
+
+}else{
+
+showQ()
+
+}
+
+}
+
+function result(){
+
+let type=Object.keys(score).reduce((a,b)=>score[a]>score[b]?a:b)
+
+let title=""
+let desc=""
+let img=""
+
+if(type=="wave"){
+
+title="🏄 Wave Rider"
+desc="도전을 즐기는 액티브 서퍼"
+img="https://images.unsplash.com/photo-1502680390469-be75c86b636f"
+
+}
+
+if(type=="storm"){
+
+title="⚡ Storm Explorer"
+desc="모험을 좋아하는 서퍼"
+img="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+
+}
+
+if(type=="social"){
+
+title="🌴 Social Surfer"
+desc="사람들과 어울리는 것을 좋아하는 서퍼"
+img="https://images.unsplash.com/photo-1493558103817-58b2924bce98"
+
+}
+
+if(type=="chill"){
+
+title="🌅 Chill Wave"
+desc="힐링을 즐기는 서퍼"
+img="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+
+}
+
+document.getElementById("app").innerHTML=`
+
+<h2>${title}</h2>
+
+<img class="resultimg" src="${img}">
+
+<p>${desc}</p>
+
+<button class="apply" onclick="window.open('${applyLink}')">
+동아리 신청하기
+</button>
+
+`
+
+}
+
+</script>
+
+</body>
+</html>
