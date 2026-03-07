@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wave Soul Test | 서핑 성향 테스트</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --sea-dark: #005f73;
+            --sea-mid: #0a9396;
+            --sea-light: #94d2bd;
+            --surf-orange: #ee9b00;
+            --pure-white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Noto Sans KR', sans-serif; }
+
+        body {
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            background: #001219;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 배경 애니메이션 디자인 */
+        .ocean { 
+            height: 40%; width: 100%; position: absolute; bottom: 0; left: 0; 
+            background: #0077b6; z-index: -1; 
+        }
+        .wave {
+            background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/85486/wave.svg') repeat-x; 
+            position: absolute; top: -198px; width: 6400px; height: 198px;
+            animation: wave 7s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite;
+            transform: translate3d(0, 0, 0);
+        }
+        @keyframes wave {
+            0% { margin-left: 0; }
+            100% { margin-left: -1600px; }
+        }
+
+        /* 컨테이너 */
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            width: 90%; max-width: 480px;
+            border-radius: 40px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        h1 { font-size: 28px; font-weight: 900; color: var(--sea-dark); margin-bottom: 8px; }
+        .subtitle { font-size: 15px; color: #666; margin-bottom: 25px; }
+
+        /* 프로그레스 바 */
+        .progress-container {
+            width: 100%; height: 8px; background: #e9ecef; border-radius: 10px; margin-bottom: 30px;
+        }
+        .progress-bar {
+            width: 0%; height: 100%; background: linear-gradient(90deg, var(--sea-mid), var(--sea-light));
+            border-radius: 10px; transition: width 0.3s ease;
+        }
+
+        /* 버튼 및 선택지 */
+        .btn-start {
+            background: var(--sea-dark); color: white; border: none; padding: 18px 40px;
+            border-radius: 50px; font-size: 18px; font-weight: 700; cursor: pointer;
+            transition: 0.3s; width: 100%;
+        }
+        .btn-start:hover { background: var(--surf-orange); transform: translateY(-3px); }
+
+        .answer-btn {
+            background: white; border: 2px solid #edf2f4; border-radius: 20px;
+            padding: 16px; margin-bottom: 12px; cursor: pointer; transition: 0.2s;
+            font-size: 15px; font-weight: 500; color: #444; width: 100%; text-align: center;
+        }
+        .answer-btn:hover { border-color: var(--sea-mid); background: #f1faff; color: var(--sea-dark); transform: scale(1.02); }
+
+        /* 결과 영역 */
+        .result-img {
+            width: 100%; height: 220px; border-radius: 25px; object-fit: cover; margin: 20px 0;
+            border: 5px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .apply-btn {
+            display: block; background: var(--surf-orange); color: white; padding: 20px;
+            border-radius: 20px; text-decoration: none; font-weight: 900; font-size: 18px;
+            margin-top: 25px; box-shadow: 0 10px 20px rgba(238, 155, 0, 0.3); transition: 0.3s;
+        }
+        .apply-btn:hover { background: #ca8100; transform: translateY(-3px); }
+
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .lang-toggle { margin-bottom: 20px; }
+        .lang-btn { background: none; border: 1px solid #ccc; padding: 5px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; margin: 0 4px; }
+        .lang-btn.active { background: var(--sea-dark); color: white; border-color: var(--sea-dark); }
+    </style>
+</head>
+<body>
+
+<div class="ocean"><div class="wave"></div></div>
+
+<div class="container fade-in">
+    <div id="start-page">
+        <div class="lang-toggle">
+            <button class="lang-btn active" id="btn-ko" onclick="setLang('ko')">한국어</button>
+            <button class="lang-btn" id="btn-en" onclick="setLang('en')">English</button>
+        </div>
+        <h1 id="main-title">🌊 WAVE SOUL TEST</h1>
+        <p class="subtitle" id="main-sub">내 안의 서핑 본능을 깨워보세요!</p>
+        <img src="https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=500&q=80" class="result-img" style="height:150px">
+        <button class="btn-start" onclick="startQuiz()" id="start-btn">테스트 시작하기</button>
+    </div>
+
+    <div id="quiz-page" class="hidden">
+        <div class="progress-container"><div class="progress-bar" id="pb"></div></div>
+        <h2 id="question" style="margin-bottom:20px; font-size:20px; color:#333;"></h2>
+        <div id="answer-box"></div>
+    </div>
+
+    <div id="result-page" class="hidden">
+        <h2 id="res-title"></h2>
+        <img id="res-img" class="result-img">
+        <p id="res-desc" style="color:#555; line-height:1.7; font-size:15px;"></p>
+        <a id="apply-link" class="apply-btn" target="_blank">동아리 가입 신청하기</a>
+    </div>
+</div>
+
+<script>
+    const i18n = {
+        ko: {
+            sub: "내 안의 서핑 본능을 깨워보세요!", start: "테스트 시작하기",
+            apply: "서핑 동아리 가입하기 (Click)",
+            questions: [
+                {q: "1. 바다로 떠나기 전 가장 먼저 챙기는 것은?", a: [{t: "철저한 서핑 장비와 슈트", s:"A"}, {t: "새로운 해변 지도와 탐험 장비", s:"B"}, {t: "친구들과 나눌 간식과 스피커", s:"C"}, {t: "해변에서 읽을 책과 돗자리", s:"D"}]},
+                {q: "2. 처음 가본 서핑 스팟, 파도가 낯설다면?", a: [{t: "다른 사람의 라이딩을 분석한다", s:"A"}, {t: "일단 패들링해서 나간다", s:"B"}, {t: "사람들에게 말을 걸어 정보를 얻는다", s:"C"}, {t: "물 밖에 앉아 바다를 감상한다", s:"D"}]},
+                {q: "3. 서핑 중 가장 짜릿한 순간은?", a: [{t: "어려운 기술을 성공했을 때", s:"A"}, {t: "아무도 없는 파도를 잡아탔을 때", s:"B"}, {t: "친구와 동시에 파도를 탔을 때", s:"C"}, {t: "보드 위에 누워 하늘을 볼 때", s:"D"}]},
+                {q: "4. 내가 꿈꾸는 서핑 여행은?", a: [{t: "유명한 프로들이 찾는 서프 캠프", s:"A"}, {t: "비행기로 한참 가야 하는 숨겨진 섬", s:"B"}, {t: "모두와 밤새 파티하는 유명 해변", s:"C"}, {t: "조용한 오두막이 있는 잔잔한 바다", s:"D"}]},
+                {q: "5. 파도가 오지 않는 대기 시간, 당신은?", a: [{t: "끊임없이 패들링 연습을 한다", s:"A"}, {t: "멀리 수평선을 보며 파도를 찾는다", s:"B"}, {t: "옆 사람에게 오늘 파도 어떠냐고 묻는다", s:"C"}, {t: "물살의 감촉을 느끼며 멍 때린다", s:"D"}]},
+                {q: "6. 서핑 중 넘어졌을 때 당신의 반응은?", a: [{t: "왜 실패했는지 다시 계산해본다", s:"A"}, {t: "웃어넘기고 다시 파도를 쫓는다", s:"B"}, {t: "친구들이 봤을까 봐 쑥스러워한다", s:"C"}, {t: "물속의 시원함을 잠시 즐긴다", s:"D"}]},
+                {q: "7. 내가 가장 좋아하는 바다의 시간은?", a: [{t: "파도가 가장 힘 있는 오전 시간", s:"A"}, {t: "새벽 안개가 낀 신비로운 바다", s:"B"}, {t: "사람들로 북적이는 한낮의 바다", s:"C"}, {t: "해질녘 노을이 깔리는 골든 아워", s:"D"}]},
+                {q: "8. 서핑은 나에게 어떤 의미인가요?", a: [{t: "성취감을 주는 스포츠", s:"A"}, {t: "일상 탈출과 모험", s:"B"}, {t: "좋은 사람들과의 연결", s:"C"}, {t: "지친 마음의 휴식", s:"D"}]}
+            ],
+            results: {
+                A: {t: "🏋️ 무결점 퍼포먼서 (Athlete)", d: "당신은 파도를 정복하는 과정에서 에너지를 얻습니다. 분석적이고 열정적인 당신은 동아리의 실력 향상을 이끌 핵심 멤버!", img: "https://images.unsplash.com/photo-1459745930869-b3d0d72c3cbb?auto=format&fit=crop&w=800&q=80"},
+                B: {t: "🛶 거침없는 탐험가 (Explorer)", d: "안전한 해변보다 거친 야생의 바다를 즐기시네요? 당신의 도전 정신은 우리 동아리의 새로운 길을 열어줄 것입니다.", img: "https://images.unsplash.com/photo-1537519646099-335112f03225?auto=format&fit=crop&w=800&q=80"},
+                C: {t: "🍹 에너지 넘치는 핵인싸 (Social)", d: "서핑보다 서핑 후의 뒤풀이가 더 기대되시나요? 당신의 친화력은 동아리원들을 하나로 묶어주는 강력한 접착제입니다.", img: "https://images.unsplash.com/photo-1528150230181-99bbf7b22162?auto=format&fit=crop&w=800&q=80"},
+                D: {t: "🧘 평화로운 힐러 (Zen Surfer)", d: "파도를 타지 않아도 바다에 있는 것만으로 충분한 당신. 당신의 여유로움은 치열한 일상에 지친 우리에게 휴식을 선물합니다.", img: "https://images.unsplash.com/photo-1506477331477-33d5d8b3dc85?auto=format&fit=crop&w=800&q=80"}
+            }
+        },
+        en: {
+            sub: "Wake up your surfing instinct!", start: "Start Test",
+            apply: "Join Our Surf Club (Click)",
+            questions: [
+                {q: "1. What do you pack first for the beach?", a: [{t: "Pro gear and wetsuit", s:"A"}, {t: "New maps and adventure tools", s:"B"}, {t: "Snacks and speakers for friends", s:"C"}, {t: "Books and a beach mat", s:"D"}]},
+                {q: "2. New surf spot, unfamiliar waves?", a: [{t: "Analyze other people's riding", s:"A"}, {t: "Just paddle out and try", s:"B"}, {t: "Ask locals for information", s:"C"}, {t: "Sit on the shore and watch", s:"D"}]},
+                {q: "3. Best moment during surfing?", a: [{t: "Mastering a difficult trick", s:"A"}, {t: "Catching a wave alone", s:"B"}, {t: "Party wave with friends", s:"C"}, {t: "Lying on the board, looking at sky", s:"D"}]},
+                {q: "4. Your dream surf trip?", a: [{t: "Surf camp with pros", s:"A"}, {t: "Hidden island far away", s:"B"}, {t: "Famous beach with parties", s:"C"}, {t: "Calm sea with a quiet cabin", s:"D"}]},
+                {q: "5. While waiting for waves?", a: [{t: "Practice paddling constantly", s:"A"}, {t: "Watch the horizon for sets", s:"B"}, {t: "Chat with the surfer nearby", s:"C"}, {t: "Zone out feeling the water", s:"D"}]},
+                {q: "6. When you wipe out?", a: [{t: "Analyze why I failed", s:"A"}, {t: "Laugh it off and try again", s:"B"}, {t: "Feel shy if friends saw it", s:"C"}, {t: "Enjoy the cool water for a bit", s:"D"}]},
+                {q: "7. Favorite time at the sea?", a: [{t: "Powerful morning waves", s:"A"}, {t: "Mysterious misty dawn", s:"B"}, {t: "Bustling sunny afternoon", s:"C"}, {t: "Golden hour sunset", s:"D"}]},
+                {q: "8. What does surfing mean to you?", a: [{t: "Athletic achievement", s:"A"}, {t: "Escape and adventure", s:"B"}, {t: "Social connection", s:"C"}, {t: "Mental healing", s:"D"}]}
+            ],
+            results: {
+                A: {t: "🏋️ Flawless Performer", d: "You get energy from mastering waves. Your analytical passion will lead our club to excellence.", img: "https://images.unsplash.com/photo-1459745930869-b3d0d72c3cbb?auto=format&fit=crop&w=800&q=80"},
+                B: {t: "🛶 Bold Explorer", d: "You prefer wild waves over safe beaches. Your adventurous spirit will open new paths for us.", img: "https://images.unsplash.com/photo-1537519646099-335112f03225?auto=format&fit=crop&w=800&q=80"},
+                C: {t: "🍹 Energetic Socializer", d: "More excited about the post-surf party? Your friendliness is the glue that holds us together!", img: "https://images.unsplash.com/photo-1528150230181-99bbf7b22162?auto=format&fit=crop&w=800&q=80"},
+                D: {t: "🧘 Zen Surfer", d: "Just being in the ocean is enough. Your relaxation is a gift to us in this busy world.", img: "https://images.unsplash.com/photo-1506477331477-33d5d8b3dc85?auto=format&fit=crop&w=800&q=80"}
+            }
+        }
+    };
+
+    let curLang = 'ko';
+    let qIdx = 0;
+    let scores = {A:0, B:0, C:0, D:0};
+
+    function setLang(l) {
+        curLang = l;
+        document.getElementById('btn-ko').classList.toggle('active', l==='ko');
+        document.getElementById('btn-en').classList.toggle('active', l==='en');
+        document.getElementById('main-sub').innerText = i18n[l].sub;
+        document.getElementById('start-btn').innerText = i18n[l].start;
+    }
+
+    function startQuiz() {
+        document.getElementById('start-page').classList.add('hidden');
+        document.getElementById('quiz-page').classList.remove('hidden');
+        showQ();
+    }
+
+    function showQ() {
+        const data = i18n[curLang].questions[qIdx];
+        document.getElementById('question').innerText = data.q;
+        const box = document.getElementById('answer-box');
+        box.innerHTML = "";
+        
+        data.a.forEach(ans => {
+            const b = document.createElement('button');
+            b.className = "answer-btn fade-in";
+            b.innerText = ans.t;
+            b.onclick = () => { scores[ans.s]++; qIdx++; qIdx < 8 ? showQ() : showRes(); };
+            box.appendChild(b);
+        });
+        document.getElementById('pb').style.width = ((qIdx+1)/8)*100 + "%";
+    }
+
+    function showRes() {
+        document.getElementById('quiz-page').classList.add('hidden');
+        document.getElementById('result-page').classList.remove('hidden');
+        document.getElementById('result-page').classList.add('fade-in');
+
+        const win = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        const res = i18n[curLang].results[win];
+
+        document.getElementById('res-title').innerText = res.t;
+        document.getElementById('res-desc').innerText = res.d;
+        document.getElementById('res-img').src = res.img;
+        
+        const link = document.getElementById('apply-link');
+        link.innerText = i18n[curLang].apply;
+        // 실제 구글 폼 주소로 꼭 변경하세요!
+        link.href = "https://docs.google.com/forms/d/e/1FAIpQLSdUfT1mArajdegkuPpvFVDfW-E7uEoijNLzhviAQCk5fOchiw/viewform";
+    }
+</script>
+</body>
+</html>
